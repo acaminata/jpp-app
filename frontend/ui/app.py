@@ -10,7 +10,7 @@ st.set_page_config(page_title="JPP – Planificador", page_icon="⛽", layout="c
 # Header
 col_logo, col_title = st.columns([1, 3], gap="large")
 with col_logo:
-    st.image("ui/assets/copec_logo.png", use_container_width=True)
+    st.image("ui/assets/copec_logo.png", use_column_width=True)
 with col_title:
     st.title("JPP")
     st.subheader("Optimizador de programación de pedidos de combustibles")
