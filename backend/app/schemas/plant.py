@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 class Plant(BaseModel):
-    werksreal: int
-    name1werksreal: str | None = None
+    plant_id: int
+    plant_name: str | None = None

@@ -9,14 +9,14 @@ router = APIRouter(prefix="/plants", tags=["plants"])
 
 QUERY = """
 SELECT DISTINCT
-    werksreal, 
-    name1werksreal
+    CAST(werksreal AS INT) AS plant_id,
+    name1werksreal          AS plant_name
 FROM logistica_scr_staging.etlist
 WHERE
     (auart = 'ZC01' OR auart = 'ZCES')
     AND regexp_like(werksreal, '^[0-9]+$')
     AND CAST(werksreal AS INT) <= 1254
-ORDER BY werksreal
+ORDER BY plant_id
 """
 
 @router.get("", response_model=List[Plant])
@@ -24,11 +24,13 @@ def list_plants():
     try:
         with get_athena_connection() as conn:
             df = pd.read_sql(QUERY, conn)
-        if "werksreal" in df.columns:
+
+        if "plant_id" in df.columns:
             try:
-                df["werksreal"] = df["werksreal"].astype(int)
+                df["plant_id"] = df["plant_id"].astype(int)
             except Exception:
                 pass
+
         return [Plant(**row.to_dict()) for _, row in df.iterrows()]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error querying Athena: {e}")
