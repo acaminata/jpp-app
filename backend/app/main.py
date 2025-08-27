@@ -1,24 +1,31 @@
 # backend/app/main.py
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends  # <- añade Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
-from .routers import plants, stations  # <- añade stations
+from .routers import plants, stations
+from .deps.auth import require_api_key
 
-app = FastAPI(title="JPP Backend", version="0.1.0")
+app = FastAPI(title="JPP Backend", version="0.1.0", docs_url=None, redoc_url=None)
+
+# Ajuste CORS: si usas "*", no permitas credentials
+allow_origins = (
+    ["*"] if settings.cors_allowed_origins in ("", "*") else [settings.cors_allowed_origins]
+)
+allow_credentials = False if "*" in allow_origins else True
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.cors_allowed_origins] if settings.cors_allowed_origins != "*" else ["*"],
-    allow_credentials=True,
+    allow_origins=allow_origins,
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/health")
+@app.get("/health", dependencies=[Depends(require_api_key)])  # protege /health (opcional)
 def health():
     return {"ok": True}
 
-# Routers registrados
-app.include_router(plants.router)
-app.include_router(stations.router)  # <- nuevo include
+# protege routers completos
+app.include_router(plants.router, dependencies=[Depends(require_api_key)])
+app.include_router(stations.router, dependencies=[Depends(require_api_key)])

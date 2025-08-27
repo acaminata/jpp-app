@@ -2,7 +2,7 @@
 $ErrorActionPreference = "Stop"
 
 # --- Paths base
-$Root = Split-Path -Parent $PSCommandPath
+$Root        = Split-Path -Parent $PSCommandPath
 $BackendDir  = Join-Path $Root "backend"
 $FrontendDir = Join-Path $Root "frontend"
 
@@ -24,8 +24,41 @@ if ($LASTEXITCODE -ne 0) { throw "uvicorn no está instalado en el venv de backe
 & $FrontendPy -m pip show streamlit | Out-Null 2>&1
 if ($LASTEXITCODE -ne 0) { throw "streamlit no está instalado en el venv de frontend." }
 
+# --- Cargar backend\.env al entorno (fallback robusto)
+$EnvFile = Join-Path $BackendDir ".env"
+if (Test-Path $EnvFile) {
+    Get-Content $EnvFile | ForEach-Object {
+        if ($_ -match "^\s*#") { return }
+        if ($_ -match "^\s*$") { return }
+        $parts = $_.Split("=",2)
+        if ($parts.Count -eq 2) {
+            $name  = $parts[0].Trim()
+            $value = $parts[1].Trim()
+            [System.Environment]::SetEnvironmentVariable($name, $value)
+        }
+    }
+} else {
+    Write-Warning "No se encontró backend\.env. Recuerda copiar .env.sample a .env"
+}
+
 # --- Variables de entorno para el frontend
-$env:BACKEND_URL = "http://localhost:8000"
+# Si frontend no usa secrets.toml, tomará estos valores vía os.getenv() (recomendado para dev)
+if (-not $env:BACKEND_URL) { $env:BACKEND_URL = "http://localhost:8000" }
+
+# Si no quedó seteado desde .env, usa un valor por defecto de dev (no pisa si ya vino de .env)
+if (-not $env:API_KEY) { $env:API_KEY = "dev-secret-key" }
+
+# --- (Opcional) Autocrear secrets.toml local si no existe para st.secrets
+$SecretsDir  = Join-Path $FrontendDir ".streamlit"
+$SecretsFile = Join-Path $SecretsDir "secrets.toml"
+if (!(Test-Path $SecretsFile)) {
+    if (!(Test-Path $SecretsDir)) { New-Item -ItemType Directory -Path $SecretsDir | Out-Null }
+@"
+BACKEND_URL = "http://localhost:8000"
+API_KEY = "$($env:API_KEY)"
+"@ | Set-Content $SecretsFile -Encoding UTF8
+    Write-Host "Creado $SecretsFile" -ForegroundColor Yellow
+}
 
 # --- Verificar puertos
 $portsBusy = Get-NetTCPConnection -LocalPort 8000,8501 -State Listen -ErrorAction SilentlyContinue

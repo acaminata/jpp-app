@@ -1,13 +1,26 @@
 # ---- imports ----
 import os
 import requests
+import time
 import pandas as pd
 import streamlit as st
 from urllib.parse import quote_plus
 
 # ---- config ----
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+BACKEND_URL = st.secrets.get("BACKEND_URL", os.getenv("BACKEND_URL", "http://localhost:8000"))
+API_KEY = st.secrets.get("API_KEY", os.getenv("API_KEY"))
 st.set_page_config(page_title="JPP – Planificador", page_icon="⛽", layout="wide")
+
+def api_get(path, params=None, retries=2, timeout=30):
+    headers = {"X-API-Key": API_KEY} if API_KEY else {}
+    url = f"{BACKEND_URL.rstrip('/')}/{path.lstrip('/')}"
+    for i in range(retries + 1):
+        try:
+            return requests.get(url, params=params, headers=headers, timeout=timeout)
+        except requests.exceptions.RequestException:
+            if i == retries:
+                raise
+            time.sleep(1 + i)
 
 # ---- encabezado ----
 col_logo, col_title = st.columns([1, 3], gap="large")
@@ -31,7 +44,7 @@ st.markdown("### 1) Selecciona una planta")
 # ---- data helpers ----
 @st.cache_data(show_spinner=True)
 def fetch_plants():
-    r = requests.get(f"{BACKEND_URL}/plants", timeout=30)
+    r = api_get("plants", timeout=30)
     r.raise_for_status()
     df = pd.DataFrame(r.json()).rename(columns={
         "werksreal": "plant_id",
@@ -45,7 +58,7 @@ def fetch_plants():
 
 @st.cache_data(show_spinner=True)
 def fetch_stations(plant_id: int):
-    r = requests.get(f"{BACKEND_URL}/plant-stations", params={"plant_id": plant_id}, timeout=60)
+    r = api_get("plant-stations", params={"plant_id": plant_id}, timeout=60)
     r.raise_for_status()
     return r.json()
 

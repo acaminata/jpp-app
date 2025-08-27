@@ -7,65 +7,51 @@ API en **FastAPI** que conecta con Athena y expone datos para la interfaz JPP.
 ## 🔧 Requisitos
 - Python 3.11+
 - Credenciales AWS con permisos para Athena y S3.
+- Variables de entorno: `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_ATHENA_OUTPUT`, `ATHENA_DATABASE`, `ATHENA_WORKGROUP`, `API_KEY`, `CORS_ALLOWED_ORIGINS`.
+- Dependencias: ver `requirements.txt` (incluye `python-dotenv`, `pyathena`, `fastapi`, `uvicorn`).
 
 ---
 
 ## ▶️ Ejecución local
 1. Ir a la carpeta `backend`
 2. Crear y activar un entorno virtual
-3. Instalar dependencias con: pip install -r requirements.txt
-4. Copiar `.env.sample` a `.env` y completar credenciales
-5. Ejecutar: uvicorn app.main:app --reload
+3. Instalar dependencias con:  
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Copiar `.env.sample` a `.env` y completar credenciales + API_KEY + CORS_ALLOWED_ORIGINS
+5. Ejecutar con script:  
+   ```powershell
+   ./dev.ps1
+   ```
+   ó manualmente:  
+   ```bash
+   uvicorn app.main:app --reload
+   ```
 
 ---
 
 ## 🌐 Endpoints
-- GET /health → Verifica que la API esté activa
-- GET /plants → Lista plantas desde Athena
+- **GET /health** → Verifica que la API esté activa (requiere header `X-API-Key`).
+- **GET /plants** → Lista plantas desde Athena.
+- **GET /plant-stations?plant_id=1234** → Lista estaciones asociadas a una planta.
 
 ---
 
 ## 📂 Estructura
 backend/
 ├─ app/
-│  ├─ main.py          # Inicializa FastAPI
-│  ├─ config.py        # Configuración y .env
-│  ├─ deps/athena.py   # Conexión Athena
-│  ├─ routers/plants.py# Endpoint /plants
-│  └─ schemas/plant.py # Modelo Pydantic para plantas
+│  ├─ main.py            # Inicializa FastAPI + CORS + routers
+│  ├─ config.py          # Configuración y .env
+│  ├─ deps/
+│  │  ├─ athena.py       # Conexión Athena
+│  │  └─ auth.py         # Validación API Key
+│  ├─ routers/
+│  │  ├─ plants.py       # Endpoint /plants
+│  │  └─ stations.py     # Endpoint /plant-stations
+│  └─ schemas/
+│     ├─ plant.py        # Modelo Pydantic Plant
+│     └─ station.py      # Modelo Pydantic Station
 ├─ requirements.txt
 ├─ .env.sample
-└─ README.md
-
-
-===== frontend/README.md =====
-# JPP Frontend
-
-Interfaz en **Streamlit** para el modelo JPP.
-
----
-
-## 🔧 Requisitos
-- Python 3.11+
-- Backend de JPP corriendo localmente o en un servidor accesible.
-
----
-
-## ▶️ Ejecución local
-1. Ir a la carpeta `frontend`
-2. Crear y activar un entorno virtual
-3. Instalar dependencias con: pip install -r requirements.txt
-4. Configurar la variable de entorno BACKEND_URL (ej: http://localhost:8000)
-5. Ejecutar: streamlit run ui/app.py
-
-Abrir en el navegador: http://localhost:8501
-
----
-
-## 📂 Estructura
-frontend/
-├─ ui/
-│  ├─ app.py               # UI principal
-│  └─ assets/copec_logo.png
-├─ requirements.txt
 └─ README.md
