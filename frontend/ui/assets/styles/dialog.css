@@ -1,0 +1,16 @@
+/* Z-index alto para que el diálogo tape cualquier input del fondo */
+div[data-testid="stDialog"] { position: relative; z-index: 99999 !important; }
+div[data-testid="stDialog"] > div[role="dialog"] { z-index: 100000 !important; }
+
+/* Tipografía compacta en el diálogo */
+div[data-testid="stDialog"] { font-size: 0.9rem !important; }
+
+/* KPIs: 3 columnas (Cap., Stock ini., #TKs) en la misma fila */
+.kpi-grid { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr 1fr; 
+  gap: 10px; 
+  align-items: start; 
+}
+.kpi-item .lbl { font-size: .78rem; color: #5f6b7a; margin-bottom: 2px; }
+.kpi-item .val { font-size: 1.0rem; font-weight: 800; line-height: 1.05; white-space: nowrap; }

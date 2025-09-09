@@ -8,11 +8,9 @@ class Settings(BaseModel):
     # Athena / AWS
     aws_access_key_id: str | None = os.getenv("AWS_ACCESS_KEY_ID")
     aws_secret_access_key: str | None = os.getenv("AWS_SECRET_ACCESS_KEY")
-    aws_region: str = os.getenv("AWS_REGION", "us-west-2")
+    aws_region: str = os.getenv("AWS_REGION", "us-east-1")
     s3_athena_output: str = os.getenv("S3_ATHENA_OUTPUT", "s3://<your-bucket>/athena-results/")
 
-    # Base de datos Athena donde vive etlist
-    athena_database: str = os.getenv("ATHENA_DATABASE", "logistica_scr_staging")
     # SSL corporativo: pon "true" para verificar, "false" si rompe por certificados internos
     athena_verify_ssl: bool = os.getenv("ATHENA_VERIFY_SSL", "false").lower() == "true"
 

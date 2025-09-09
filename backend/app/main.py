@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends  # <- añade Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
-from .routers import plants, stations
+from .routers import plants, stations, telemetry
 from .deps.auth import require_api_key
 
 app = FastAPI(title="JPP Backend", version="0.1.0", docs_url=None, redoc_url=None)
@@ -29,3 +29,4 @@ def health():
 # protege routers completos
 app.include_router(plants.router, dependencies=[Depends(require_api_key)])
 app.include_router(stations.router, dependencies=[Depends(require_api_key)])
+app.include_router(telemetry.router, dependencies=[Depends(require_api_key)]) 

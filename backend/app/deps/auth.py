@@ -1,4 +1,3 @@
-# backend/app/deps/auth.py
 import os
 from fastapi import Header, HTTPException, status
 
