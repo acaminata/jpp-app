@@ -2,7 +2,7 @@
 from __future__ import annotations
 import streamlit as st
 from typing import Dict
-from ..dialogs.station_details import show_station_dialog
+from dialogs.station_details import show_station_dialog
 
 def render_station_card(col, station: Dict, idx: int) -> None:
     """Tarjeta de estación con botón 'Ver detalles' que abre el diálogo."""
