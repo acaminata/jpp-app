@@ -6,6 +6,7 @@ from typing import Dict
 from services.data import fetch_telemetry_summary
 from utils.formatting import fmt_num
 from utils.assets import load_asset_text
+import requests
 
 @st.dialog("Detalles de estación", width="large")
 def show_station_dialog(station: Dict):
@@ -19,10 +20,21 @@ def show_station_dialog(station: Dict):
     st.caption(f"**Estación:** {cid} – {sname}")
     st.write("")
 
-    # 3) Datos de backend
+    # 3) Datos de backend        
     with st.spinner("Obteniendo capacidades y lecturas…"):
         try:
             data = fetch_telemetry_summary(cid)
+        except requests.HTTPError as http_err:
+            # Mensaje claro con la URL y el cuerpo devuelto por el backend
+            status = getattr(http_err.response, "status_code", "?")
+            url = getattr(http_err.response, "url", "desconocida")
+            body = ""
+            try:
+                body = http_err.response.text[:1000]
+            except Exception:
+                body = str(http_err)
+            st.error(f"Backend {status} en {url}\n\n{body}")
+            return
         except Exception as e:
             st.error(f"No se pudo cargar la telemetría: {e}")
             return
