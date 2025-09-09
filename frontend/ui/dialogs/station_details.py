@@ -3,9 +3,9 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 from typing import Dict
-from services.data import fetch_telemetry_summary
-from utils.formatting import fmt_num
-from utils.assets import load_asset_text
+from ..services.data import fetch_telemetry_summary
+from ..utils.formatting import fmt_num
+from ..utils.assets import load_asset_text
 
 @st.dialog("Detalles de estación", width="large")
 def show_station_dialog(station: Dict):
