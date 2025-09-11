@@ -1,0 +1,41 @@
+2025-09-11 15:54:48.400 Uncaught app exception
+Traceback (most recent call last):
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\.venv\Lib\site-packages\streamlit\runtime\scriptrunner\exec_code.py", line 85, in exec_func_with_error_handling
+    result = func()
+             ^^^^^^
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\.venv\Lib\site-packages\streamlit\runtime\scriptrunner\script_runner.py", line 576, in code_to_exec
+    exec(code, module.__dict__)
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\ui\app.py", line 8, in <module>
+    from components.station_card import render_station_card
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\ui\components\station_card.py", line 5, in <module>
+    from dialogs.station_details import show_station_dialog
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\ui\dialogs\station_details.py", line 6, in <module>
+    from services.data import fetch_telemetry_summary, fetch_demand_curve
+ImportError: cannot import name 'fetch_demand_curve' from 'services.data' (C:\Users\acamino\Documents\GitHub\jpp-app\frontend\ui\services\data.py)
+2025-09-11 15:55:13.753 Uncaught app exception
+Traceback (most recent call last):
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\.venv\Lib\site-packages\streamlit\runtime\fragment.py", line 231, in wrapped_fragment
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\.venv\Lib\site-packages\streamlit\elements\dialog_decorator.py", line 77, in dialog_content
+    _ = non_optional_func(*args, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\ui\dialogs\station_details.py", line 81, in show_station_dialog
+    tdf = pd.DataFrame(tanks).rename(columns={
+          ^^
+UnboundLocalError: cannot access local variable 'pd' where it is not associated with a value
+2025-09-11 17:56:17.937 Uncaught app exception
+Traceback (most recent call last):
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\.venv\Lib\site-packages\streamlit\runtime\fragment.py", line 231, in wrapped_fragment
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\.venv\Lib\site-packages\streamlit\elements\dialog_decorator.py", line 77, in dialog_content
+    _ = non_optional_func(*args, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\ui\dialogs\station_details.py", line 100, in show_station_dialog
+    start_max_allowed = _start_max_for(int(weeks_input))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\acamino\Documents\GitHub\jpp-app\frontend\ui\dialogs\station_details.py", line 83, in _start_max_for
+    return (data_max - pd.Timedelta(days=weeks_val * 7 - 1)).date()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'datetime.date' object has no attribute 'date'

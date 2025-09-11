@@ -32,3 +32,12 @@ def fetch_telemetry_summary(client_id: int):
     r = api_get("telemetry/summary", params={"client_id": client_id}, timeout=60)
     r.raise_for_status()
     return r.json()
+
+@st.cache_data(show_spinner=True)
+def fetch_demand_curve(client_id: int, start_date: str | None = None, weeks: int = 8):
+    params = {"client_id": client_id, "weeks": weeks}
+    if start_date:
+        params["start_date"] = start_date
+    r = api_get("demand/curve", params=params, timeout=60)
+    r.raise_for_status()
+    return r.json()
